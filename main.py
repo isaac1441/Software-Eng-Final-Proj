@@ -41,11 +41,11 @@ def toggle_theme():
         set_dark_mode()
     else:
         set_light_mode()
-def toggle_sidebar():
-    if sidebar.winfo_ismapped():
-        sidebar.grid_remove()
+def toggle_frame(frame):
+    if frame.winfo_ismapped():
+        frame.grid_remove()
     else:
-        sidebar.grid()
+        frame.grid()
 def render_home_feed():
     if len(posts_dict) > 0:
         for child in homeframe.winfo_children():
@@ -61,8 +61,8 @@ def render_home_feed():
         
         posts_dict[frame_name] = frame
         frame.pack(padx=5, pady=5)
-        ttk.Label(frame, text=post[1]).pack()
-        ttk.Label(frame, text=post[2]).pack()
+        ttk.Label(frame, text=post[1], width=25, justify='left',wraplength=100).pack(fill='both', expand=True)
+        ttk.Label(frame, text=post[2], width=25, justify='left', wraplength=100).pack(fill='both', expand=True)
 
 root.geometry("420x420")
 
@@ -77,7 +77,6 @@ homeframe.grid(column=1, row=0, sticky=(N,S))
 sidebar = ttk.Frame(root, width=150)
 sidebar.grid(column=2,row=0, sticky=(E,N))
 sidebar.grid_remove()
-ttk.Button(sidebar, text="Refresh", command=render_home_feed).pack()
 
 #frame configure (make row/col stretch with window size)
 root.columnconfigure(0, weight=1)
@@ -86,11 +85,6 @@ mainframe.rowconfigure(0, weight=1)
 mainframe.columnconfigure(0, weight=1)
 # homeframe.columnconfigure(0, weight=1)
 # homeframe.rowconfigure(0, weight=1)
-
-#overlay frame meant for top level content -eg sidebar
-# overlay = ttk.Frame(root, style="Overlay.TFrame")
-# overlay.place(relx=0, rely=0, relwidth=1, relheight=1)
-# overlay.lift()
 
 #styling 
 style = ttk.Style()
@@ -106,18 +100,12 @@ root.configure(background="#D9D9D9")
 homeframe.configure(style="grey.TFrame")
 
 
-
-#home feed frame
-# ttk.Button(mainframe, text="Menu", command=lambda: (
-#         sidebar.grid_remove() if menu_bool.get() else sidebar.grid(),
-#         menu_bool.set(not menu_bool.get())
-#     )).grid(column=4, row=0, sticky=(N,W))
-
-#holds the frames of the home feed posts
 posts_dict = {}
 
 post_box = ttk.Frame(mainframe, width=200, height=200)
 post_box.grid(column=0, row=0, sticky=(W,N))
+post_box.grid_remove()
+homeframe.grid_remove()
 
 ttk.Label(post_box, text="Title").grid(column=0, row=0, sticky=W)
 title_input = StringVar()
@@ -131,27 +119,29 @@ body_field.grid(column=1, row=1, sticky=(W, E))
 
 ttk.Button(post_box, text="Upload", command=lambda: [upload_post(title=title_input.get(), body=body_input.get()), render_home_feed()]).grid(column=0, row=2, sticky=(W,E))
 
+ttk.Button(mainframe, text="Menu", command=lambda: toggle_frame(sidebar)).grid(column=2, row=0, sticky=(N,W))
+ttk.Button(mainframe, text="Home Feed", command=lambda: toggle_frame(homeframe)).grid(column=1, row=0, sticky=(N,W))
 
-ttk.Button(mainframe, text="Menu", command=toggle_sidebar).grid(column=2, row=0, sticky=(N,W))
 ttk.Label(sidebar, text="side bar").pack()
+ttk.Button(sidebar, text="Refresh", command=render_home_feed).pack()
+ttk.Button(sidebar, text="+", command=lambda: toggle_frame(post_box)).pack()
 
-
+# def update_wrap(event):
+#     label.config(wraplength=event.width - 20)
+# label.bind('<Configure>', update_wrap)
 
 #night mode ----------
 
-#Boolean Variable
 night_mode_bool = BooleanVar()
-#Check button
-night_mode_button = ttk.Checkbutton(sidebar, text="Night Mode",
- variable=night_mode_bool, command=toggle_theme)
-# night_mode_button.grid(column=3, row=1, sticky=(N,E))
+night_mode_button = ttk.Checkbutton(sidebar, text="Night Mode",variable=night_mode_bool, command=toggle_theme)
 night_mode_button.pack()
 
 
 
 
-
-
+for x in mainframe.winfo_children():
+    print(x)
+    
 #Focus cursor on text box input when window ens
 # meow_entry.focus()
 #Pressing Enter calls upload_post function
