@@ -5,6 +5,15 @@ import sqlite3
 dataConnect = sqlite3.connect('myData.db')
 cursor = dataConnect.cursor()
 
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS posts (
+    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    title TEXT NOT NULL,
+    body TEXT NOT NULL
+)
+''')
+
+dataConnect.commit()
 
 root = Tk()
 root.title('Desktop App')
@@ -14,7 +23,6 @@ root.title('Desktop App')
 def upload_post(title, body):
     cursor.execute("INSERT INTO posts (title, body) VALUES (?, ?)",(title, body))
     dataConnect.commit()
-
 def set_light_mode():
     #setting light style
     style.configure("TFrame")
@@ -38,7 +46,6 @@ def toggle_sidebar():
         sidebar.grid_remove()
     else:
         sidebar.grid()
-
 def render_home_feed():
     if len(posts_dict) > 0:
         for child in homeframe.winfo_children():
@@ -122,7 +129,7 @@ body_input = StringVar()
 body_field = ttk.Entry(post_box, width=7, textvariable=body_input)
 body_field.grid(column=1, row=1, sticky=(W, E))
 
-ttk.Button(post_box, text="Upload", command=lambda: upload_post(title=title_input.get(), body=body_input.get())).grid(column=0, row=2, sticky=(W,E))
+ttk.Button(post_box, text="Upload", command=lambda: [upload_post(title=title_input.get(), body=body_input.get()), render_home_feed()]).grid(column=0, row=2, sticky=(W,E))
 
 
 ttk.Button(mainframe, text="Menu", command=toggle_sidebar).grid(column=2, row=0, sticky=(N,W))
@@ -152,3 +159,4 @@ mainframe.bind("<Return>", upload_post)
 render_home_feed()
 #Runs the program loop
 root.mainloop()
+
