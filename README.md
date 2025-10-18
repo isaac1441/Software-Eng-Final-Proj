@@ -10,9 +10,11 @@ Features we will most likely implement:
 Social Feed, 
 Direct Messaging, 
 
-
+Second Sprint 4-5 days
 views - user signup & login, home page, post creation, focus on one post,
 settings
+
+First Sprint 2-3 days
 
 Back end:
 Database - 
